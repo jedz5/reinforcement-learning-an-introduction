@@ -40,8 +40,8 @@ class Bandit:
 
     def reset(self):
         # real reward for each action
-        self.q_true = np.random.randn(self.k) + self.true_reward
-
+        #self.q_true = np.random.randn(self.k) + self.true_reward
+        self.q_true = self.true_reward
         # estimation for each action
         self.q_estimation = np.zeros(self.k) + self.initial
 
@@ -64,14 +64,14 @@ class Bandit:
         if self.gradient:
             exp_est = np.exp(self.q_estimation)
             self.action_prob = exp_est / np.sum(exp_est)
-            return np.random.choice(self.indices, p=self.action_prob)
+            return np.argmax(self.action_prob)  #np.random.choice(self.indices, p=self.action_prob)
 
         return np.argmax(self.q_estimation)
 
     # take an action, update estimation for this action
     def step(self, action):
         # generate the reward under N(real reward, 1)
-        reward = np.random.randn() + self.q_true[action]
+        reward = self.q_true[action] #+ np.random.randn()
         self.time += 1
         self.average_reward = (self.time - 1.0) / self.time * self.average_reward + reward / self.time
         self.action_count[action] += 1
@@ -171,10 +171,10 @@ def figure_2_4(runs=2000, time=1000):
 
 def figure_2_5(runs=2000, time=1000):
     bandits = []
-    bandits.append(Bandit(gradient=True, step_size=0.1, gradient_baseline=True, true_reward=4))
-    bandits.append(Bandit(gradient=True, step_size=0.1, gradient_baseline=False, true_reward=4))
-    bandits.append(Bandit(gradient=True, step_size=0.4, gradient_baseline=True, true_reward=4))
-    bandits.append(Bandit(gradient=True, step_size=0.4, gradient_baseline=False, true_reward=4))
+    # bandits.append(Bandit(gradient=True, step_size=0.1, gradient_baseline=True, true_reward=4))
+    bandits.append(Bandit(k_arm=3,gradient=True, step_size=0.1,initial=np.array([2,5,7]) ,gradient_baseline=True, true_reward=np.array([3,2,1])))
+    # bandits.append(Bandit(gradient=True, step_size=0.4, gradient_baseline=True, true_reward=4))
+    # bandits.append(Bandit(gradient=True, step_size=0.4, gradient_baseline=False, true_reward=4))
     best_action_counts, _ = simulate(runs, time, bandits)
     labels = ['alpha = 0.1, with baseline',
               'alpha = 0.1, without baseline',
@@ -223,9 +223,9 @@ def figure_2_6(runs=2000, time=1000):
     plt.close()
 
 if __name__ == '__main__':
-    figure_2_1()
-    figure_2_2()
-    figure_2_3()
-    figure_2_4()
+    # figure_2_1()
+    # figure_2_2()
+    # figure_2_3()
+    # figure_2_4()
     figure_2_5()
     figure_2_6()
