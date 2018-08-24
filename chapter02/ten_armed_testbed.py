@@ -64,7 +64,7 @@ class Bandit:
         if self.gradient:
             exp_est = np.exp(self.q_estimation)
             self.action_prob = exp_est / np.sum(exp_est)
-            return  np.random.choice(self.indices, p=self.action_prob) #np.argmax(self.action_prob)  #
+            return  np.argmax(self.action_prob)   #np.random.choice(self.indices, p=self.action_prob) #  #
 
         return np.argmax(self.q_estimation)
 
@@ -172,7 +172,7 @@ def figure_2_4(runs=2000, time=1000):
 def figure_2_5(runs=2000, time=1000):
     bandits = []
     # bandits.append(Bandit(gradient=True, step_size=0.1, gradient_baseline=True, true_reward=4))
-    bandits.append(Bandit(k_arm=3,gradient=True, step_size=0.1,initial=np.array([0,0,0]) ,gradient_baseline=True, true_reward=np.array([3,2,1])))
+    bandits.append(Bandit(k_arm=3,gradient=True, step_size=0.1,initial=np.array([0,0,0]) ,gradient_baseline=True, true_reward=np.array([1,2,3])))
     # bandits.append(Bandit(gradient=True, step_size=0.4, gradient_baseline=True, true_reward=4))
     # bandits.append(Bandit(gradient=True, step_size=0.4, gradient_baseline=False, true_reward=4))
     best_action_counts, _ = simulate(runs, time, bandits)
@@ -222,33 +222,40 @@ def figure_2_6(runs=2000, time=1000):
     plt.savefig('../images/figure_2_6.png')
     plt.close()
 def xx():
-    abc = np.array([0,0,0],dtype=float)
-    step = 0.1
-    Q = np.array([3,2,1])
-    pa = np.array([1,0,0])
-    pb = np.array([0, 1, 0])
-    pc = np.array([0, 0, 1])
-    for i in range(2000)
-    for i in range(1000):
-        esp = np.exp(abc)
-        pi = esp / np.sum(esp)
-        print("pi")
-        print(pi)
-        action = np.random.choice(np.arange(3),p=pi)
-        one_hot = np.zeros(3)
-        one_hot[action] = 1
-        a = (pi*Q*(pa-pi[0])).sum()
-        b = (pi * Q * (pb - pi[1])).sum()
-        c = (pi * Q * (pc - pi[2])).sum()
-        D = step*np.array([a,b,c])
-        abc += D
-        print("----after delta")
-        print(abc)
+
+    for j in range(2000):
+        abc = np.array([0, 0, 0], dtype=float)
+        step = 0.1
+        Q = np.array([3, 2, 1])
+        pa = np.array([1, 0, 0])
+        pb = np.array([0, 1, 0])
+        pc = np.array([0, 0, 1])
+        avg_reward = 0
+        for i in range(1000):
+            esp = np.exp(abc)
+            pi = esp / np.sum(esp)
+            print("pi")
+            print(pi)
+            action = np.random.choice(np.arange(3),p=pi)
+            reward = Q[action]
+            avg_reward += 1 / (i + 1) * (reward - avg_reward)
+            print("avg_reward")
+            print(avg_reward)
+            one_hot = np.zeros(3)
+            one_hot[action] = 1
+            a = (pi*Q*(pa-pi[0])).sum()
+            b = (pi * Q * (pb - pi[1])).sum()
+            c = (pi * Q * (pc - pi[2])).sum()
+            D2 = step*np.array([a,b,c])
+            D = step * ((reward -avg_reward) * (one_hot - pi))
+            abc += D
+            print("----after delta")
+            print(abc)
 if __name__ == '__main__':
     # figure_2_1()
     # figure_2_2()
     # figure_2_3()
     # figure_2_4()
-    # figure_2_5()
+    figure_2_5()
     # figure_2_6()
-    xx()
+    # xx()

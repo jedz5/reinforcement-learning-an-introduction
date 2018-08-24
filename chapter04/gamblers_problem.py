@@ -44,6 +44,7 @@ def figure_4_3():
 
     # compute the optimal policy
     policy = np.zeros(GOAL + 1)
+    action_return_list = [0]
     for state in STATES[1:GOAL]:
         actions = np.arange(min(state, GOAL - state) + 1)
         action_returns = []
@@ -51,7 +52,11 @@ def figure_4_3():
             action_returns.append(
                 HEAD_PROB * state_value[state + action] + (1 - HEAD_PROB) * state_value[state - action])
         # due to tie, can't reproduce the optimal policy in book
-        policy[state] = actions[np.argmax(action_returns)]
+        action_return_list.append(action_returns)
+        if state == 50:
+            print()
+        aMax = list_duplicates_of(action_returns,max(action_returns))
+        policy[state] = actions[aMax[-1]]
 
     plt.figure(figsize=(10, 20))
 
@@ -67,6 +72,18 @@ def figure_4_3():
 
     plt.savefig('../images/figure_4_3.png')
     plt.close()
+def list_duplicates_of(seq,item):
+    start_at = -1
+    locs = []
+    while True:
+        try:
+            loc = seq.index(item,start_at+1)
+        except ValueError:
+            break
+        else:
+            locs.append(loc)
+            start_at = loc
+    return locs
 
 if __name__ == '__main__':
     figure_4_3()
